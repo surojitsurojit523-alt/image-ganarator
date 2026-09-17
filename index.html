@@ -1,137 +1,569 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-site-verification" content="hHweZs01Unn9JowcVH8z9UbmmrbNvNJ-2s1yJuMBHo4" />
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>premium Store</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <style>
-        :root { --primary: #6366f1; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; margin: 0; padding-bottom: 80px; }
-        .header { background: white; padding: 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        #searchInput { width: 90%; padding: 12px; border-radius: 25px; border: 1px solid #e2e8f0; outline: none; margin: auto; display: block; background: #f8fafc; }
-        .app-card { background: white; margin: 15px; padding: 16px; border-radius: 20px; display: flex; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .app-card img { width: 70px; height: 70px; border-radius: 18px; margin-right: 18px; object-fit: cover; }
-        .download-btn { background: var(--primary); color: white; padding: 10px 20px; border-radius: 12px; border: none; font-weight: 600; cursor: pointer; }
-        .del-btn { background: red; color: white; border: none; padding: 8px 12px; border-radius: 8px; margin-left: 10px; cursor: pointer; }
-        .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; backdrop-filter: blur(5px); }
-        .modal-content { background: white; width: 85%; margin: 40% auto; padding: 25px; border-radius: 25px; text-align: center; }
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 18px 0; border-top: 1px solid #e2e8f0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Generator</title>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #0b0b0f;
+  color: white;
+  min-height: 100vh;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #25252d;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.logo span {
+  color: #8b5cf6;
+}
+
+.badge {
+  font-size: 12px;
+  background: #21163b;
+  color: #c4b5fd;
+  padding: 7px 12px;
+  border-radius: 20px;
+}
+
+main {
+  max-width: 650px;
+  margin: auto;
+  padding: 45px 20px;
+  text-align: center;
+}
+
+/* AI ROBOT */
+
+.robot {
+  width: 145px;
+  height: 145px;
+  margin: 0 auto 30px;
+  background: radial-gradient(circle, #28213e, #14121e);
+  border: 1px solid #4c3673;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 0 45px #8b5cf633;
+  animation: float 3s ease-in-out infinite;
+}
+
+.robot-face {
+  width: 95px;
+  height: 78px;
+  background: #d8d8e8;
+  border-radius: 25px;
+  position: relative;
+  box-shadow: inset 0 -7px 0 #a4a4b8;
+}
+
+.robot-face::before {
+  content: "";
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  background: #8b5cf6;
+  border-radius: 50%;
+  left: 21px;
+  top: 23px;
+  box-shadow: 36px 0 #8b5cf6;
+  animation: blink 4s infinite;
+}
+
+.robot-face::after {
+  content: "";
+  position: absolute;
+  width: 35px;
+  height: 7px;
+  background: #77778c;
+  border-radius: 10px;
+  bottom: 16px;
+  left: 30px;
+}
+
+.robot-antenna {
+  position: absolute;
+  width: 5px;
+  height: 25px;
+  background: #8b5cf6;
+  top: -25px;
+  left: 70px;
+}
+
+.robot-antenna::before {
+  content: "";
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  background: #a78bfa;
+  border-radius: 50%;
+  top: -7px;
+  left: -4px;
+  box-shadow: 0 0 15px #a78bfa;
+}
+
+.robot-name {
+  margin-top: -20px;
+  margin-bottom: 25px;
+  color: #a78bfa;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes blink {
+  0%, 90%, 100% {
+    opacity: 1;
+  }
+
+  95% {
+    opacity: 0.1;
+  }
+}
+
+h1 {
+  font-size: 42px;
+  margin-bottom: 15px;
+}
+
+h1 span {
+  color: #a78bfa;
+}
+
+.subtitle {
+  color: #9999a8;
+  line-height: 1.6;
+  margin-bottom: 35px;
+}
+
+.generator {
+  background: #15151c;
+  border: 1px solid #292936;
+  border-radius: 18px;
+  padding: 20px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  color: #c4c4d0;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+textarea {
+  width: 100%;
+  height: 110px;
+  resize: none;
+  background: #0d0d12;
+  color: white;
+  border: 1px solid #30303b;
+  border-radius: 12px;
+  padding: 15px;
+  font-size: 15px;
+  outline: none;
+}
+
+textarea:focus {
+  border-color: #8b5cf6;
+}
+
+button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: #8b5cf6;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #7c3aed;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#loading {
+  display: none;
+  margin-top: 25px;
+  text-align: center;
+}
+
+.loader {
+  width: 45px;
+  height: 45px;
+  border: 4px solid #33333f;
+  border-top-color: #a78bfa;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* PRANK BACKGROUND */
+
+#prankBackground {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #080808;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.prank-content {
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.prank-image {
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #15151c;
+  border: 2px solid #8b5cf6;
+}
+
+.prank-title {
+  color: #c4b5fd;
+  font-size: 26px;
+  margin: 20px 0 10px;
+}
+
+.prank-text {
+  color: #aaa;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+footer {
+  text-align: center;
+  color: #666675;
+  font-size: 12px;
+  padding: 30px;
+}
+</style>
 </head>
+
 <body>
 
-    <header class="header">
-        <input type="text" id="searchInput" placeholder="🔍 Search apps..." onkeyup="handleAppFilter()">
-    </header>
+<header>
+  <div class="logo">Image <span>Generator</span></div>
+  <div class="badge">AI Powered</div>
+</header>
 
-    <div id="appContainer"></div>
+<main>
 
-    <div class="nav-bar">
-        <div onclick="location.reload()">🏠 Home</div>
-        <div onclick="alert('Help: I have created a website, but there are some bugs that I need to fix. I will be working on it again to make it right. Just wanted to let you know.')">⚙️ Help</div>
-    </div>
+<div class="robot">
+  <div class="robot-face">
+    <div class="robot-antenna"></div>
+  </div>
+</div>
 
-    <div id="adModal" class="modal">
-        <div class="modal-content">
-            <span onclick="document.getElementById('adModal').style.display='none'" style="float:right; cursor:pointer; font-size:24px; font-weight:bold; color:#666;">&times;</span>
-            <h3>Download Link Ready</h3>
-            <p>Wait <span id="countdown" style="color:var(--primary); font-weight:bold;">5</span> seconds...</p>
-            <a id="finalDownloadBtn" href="#" class="download-btn" style="display:none; background:green; text-decoration:none;">Click to Download</a>
-        </div>
-    </div>
+<div class="robot-name">● AI ROBOT ONLINE</div>
 
-    <div id="adminPanel" style="display:none; background:#1e293b; color:white; padding:20px; border-radius:20px; margin:15px;">
-        <h3>Admin Control</h3>
-        <input type="text" id="appName" placeholder="Name" style="width:100%; padding:10px; border-radius:8px; border:none; margin-bottom:10px;">
-        <input type="text" id="appLink" placeholder="Link" style="width:100%; padding:10px; border-radius:8px; border:none; margin-bottom:10px;">
-        <input type="file" id="iconUpload" accept="image/*"><br><br>
-        <button onclick="saveApp()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; margin-bottom:10px;">Upload</button>
-    </div>
+<h1>Create <span>Anything</span><br>With AI</h1>
 
-    <script>
-        const firebaseConfig = { databaseURL: "https://fuchu-app-default-rtdb.firebaseio.com/" };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+<p class="subtitle">
+  Turn your imagination into amazing images with our next-generation AI image generator.
+</p>
 
-        function handleAppFilter() {
-            let val = document.getElementById("searchInput").value;
-            if(val === "adminsurojit") {
-                document.getElementById("adminPanel").style.display = "block";
-            } else {
-                document.getElementById("adminPanel").style.display = "none";
-            }
-            renderApps(val);
-        }
+<div class="generator">
 
-        // অ্যাপ লিস্ট রেন্ডার করা এবং ডিলিট বাটন দেখানো
-        function renderApps(searchTerm = "") {
-            let isAdmin = (document.getElementById("searchInput").value === "adminsurojit");
-            db.ref('apps/').on('value', (snapshot) => {
-                const container = document.getElementById('appContainer');
-                container.innerHTML = "";
-                let filter = searchTerm.toLowerCase();
-                
-                snapshot.forEach((child) => {
-                    let app = child.val();
-                    if (app.name.toLowerCase().includes(filter)) {
-                        container.innerHTML += `
-                            <div class="app-card">
-                                <img src="${app.icon}">
-                                <div style="flex-grow:1">
-                                    <strong style="font-size:16px">${app.name}</strong><br><br>
-                                    <button class="download-btn" onclick="showAd('${app.link}')">Install</button>
-                                    ${isAdmin ? `<button class="del-btn" onclick="deleteApp('${child.key}')">Delete</button>` : ''}
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-            });
-        }
+<label for="prompt">Describe your image</label>
 
-        // ডিলিট করার ফাংশন
-        function deleteApp(key) {
-            if(confirm("আপনি কি নিশ্চিত যে এই অ্যাপটি ডিলিট করতে চান?")) {
-                db.ref('apps/' + key).remove()
-                .then(() => { alert("অ্যাপটি ডিলিট হয়েছে!"); })
-                .catch((error) => { alert("Error: " + error.message); });
-            }
-        }
+<textarea
+  id="prompt"
+  placeholder="A futuristic city at sunset..."
+></textarea>
 
-        function showAd(link) {
-            document.getElementById('adModal').style.display = 'block';
-            let count = 5;
-            document.getElementById('countdown').innerText = count;
-            document.getElementById('finalDownloadBtn').style.display = 'none';
-            let timer = setInterval(() => {
-                count--;
-                document.getElementById('countdown').innerText = count;
-                if(count <= 0) {
-                    clearInterval(timer);
-                    document.getElementById('finalDownloadBtn').style.display = 'inline-block';
-                    document.getElementById('finalDownloadBtn').href = link;
-                }
-            }, 1000);
-        }
+<button id="generateBtn" onclick="generateImage()">
+  Generate Image ✨
+</button>
 
-        function saveApp() {
-            const file = document.getElementById('iconUpload').files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                db.ref('apps/').push({ 
-                    name: document.getElementById("appName").value, 
-                    link: document.getElementById("appLink").value, 
-                    icon: e.target.result 
-                });
-                alert("App Uploaded!");
-            };
-            reader.readAsDataURL(file);
-        }
-        
-        renderApps();
-    </script>
+<div id="loading">
+  <div class="loader"></div>
+
+  <p style="color:#aaa;">
+    AI Robot is generating your image...
+  </p>
+</div>
+
+</div>
+
+</main>
+
+<footer>
+  © 2026 Image Generator 
+</footer>
+
+
+<!-- PRANK BACKGROUND -->
+
+<div id="prankBackground">
+
+  <div class="prank-content">
+
+    <svg
+      class="prank-image"
+      viewBox="0 0 500 350"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="Funny robot prank illustration"
+    >
+
+      <rect width="500" height="350" fill="#15151c"/>
+
+      <circle
+        cx="250"
+        cy="150"
+        r="105"
+        fill="#28213e"
+        stroke="#8b5cf6"
+        stroke-width="3"
+      />
+
+      <rect
+        x="165"
+        y="90"
+        width="170"
+        height="135"
+        rx="35"
+        fill="#d8d8e8"
+      />
+
+      <circle cx="215" cy="145" r="20" fill="#8b5cf6"/>
+      <circle cx="285" cy="145" r="20" fill="#8b5cf6"/>
+
+      <path
+        d="M210 185 Q250 215 290 185"
+        fill="none"
+        stroke="#77778c"
+        stroke-width="8"
+        stroke-linecap="round"
+      />
+
+      <line
+        x1="250"
+        y1="90"
+        x2="250"
+        y2="55"
+        stroke="#8b5cf6"
+        stroke-width="6"
+      />
+
+      <circle cx="250" cy="48" r="12" fill="#a78bfa"/>
+
+      <text
+        x="250"
+        y="290"
+        text-anchor="middle"
+        font-size="30"
+        font-weight="bold"
+        fill="#c4b5fd"
+      >
+        GOT YOU! 😂
+      </text>
+
+      <text
+        x="250"
+        y="320"
+        text-anchor="middle"
+        font-size="15"
+        fill="#aaa"
+      >
+        AI Robot Prank
+      </text>
+
+    </svg>
+
+    <h2 class="prank-title">
+      😂 Image Generator Prank!
+    </h2>
+
+    <p class="prank-text">
+      The AI Robot has generated a surprise!
+      <br>
+      This is a harmless prank demo.
+    </p>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/*
+========================================
+নিজের sound এখানে সেট করো
+========================================
+
+ফাইলের নাম prank-sound.mp3 হলে
+এই লাইনটি ঠিক থাকবে।
+
+অন্য নাম হলে নামটি বদলাবে।
+*/
+
+const prankSound = new Audio("prank-sound.mp3");
+
+prankSound.loop = true;
+prankSound.volume = 0.1;
+
+let currentVolume = 0.1;
+
+
+/*
+========================================
+GENERATE IMAGE
+========================================
+*/
+
+function generateImage() {
+
+  const prompt = document.getElementById("prompt").value.trim();
+
+  if (prompt === "") {
+    alert("Please enter an image description!");
+    return;
+  }
+
+  const generateBtn = document.getElementById("generateBtn");
+
+  generateBtn.disabled = true;
+
+  document.getElementById("loading").style.display = "block";
+
+  setTimeout(function() {
+
+    document.getElementById("loading").style.display = "none";
+
+    generateBtn.disabled = false;
+
+    showPrank();
+
+  }, 3000);
+
+}
+
+
+/*
+========================================
+SHOW PRANK
+========================================
+*/
+
+function showPrank() {
+
+  document.getElementById("prankBackground").style.display = "flex";
+
+  startSound();
+
+}
+
+
+/*
+========================================
+START SOUND
+========================================
+*/
+
+function startSound() {
+
+  currentVolume = 0.1;
+
+  prankSound.volume = currentVolume;
+
+  prankSound.currentTime = 0;
+
+  prankSound.play().catch(function(error) {
+
+    console.log("Sound could not start:", error);
+
+  });
+
+}
+
+
+/*
+========================================
+SCREEN TAP = VOLUME INCREASE
+========================================
+*/
+
+document.getElementById("prankBackground").addEventListener("click", function(event) {
+
+  currentVolume += 0.1;
+
+  if (currentVolume > 1) {
+    currentVolume = 1;
+  }
+
+  prankSound.volume = currentVolume;
+
+});
+
+
+/*
+========================================
+STOP SOUND
+========================================
+*/
+
+function stopSound() {
+
+  prankSound.pause();
+
+  prankSound.currentTime = 0;
+
+}
+
+</script>
+
 </body>
 </html>
