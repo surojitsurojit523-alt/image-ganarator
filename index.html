@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#08080d">
+
+<title>holic's AI — Image Generator</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,body{
+  min-height:100%;
+}
+
+body{
+  font-family:Arial,Helvetica,sans-serif;
+  background:#08080d;
+  color:#fff;
+  overflow-x:hidden;
+}
+
+/* ================= INTRO ================= */
+
+#intro{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  background:
+    radial-gradient(circle at center,#28154d,#0b0911 55%,#050507);
+  transition:.8s;
+}
+
+#intro.hide{
+  opacity:0;
+  visibility:hidden;
+}
+
+.intro-content{
+  animation:introIn 1s ease;
+}
+
+.intro-logo{
+  width:90px;
+  height:90px;
+  margin:auto;
+  border-radius:27px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:42px;
+  font-weight:900;
+  background:linear-gradient(135deg,#914cff,#6123d8);
+  box-shadow:0 0 45px #8b5cf677;
+}
+
+.intro-title{
+  margin-top:24px;
+  font-size:34px;
+  font-weight:800;
+}
+
+.intro-title span{
+  color:#a78bfa;
+}
+
+.created{
+  margin-top:10px;
+  color:#9995a5;
+  font-size:14px;
+}
+
+.created b{
+  color:white;
+}
+
+.intro-line{
+  width:170px;
+  height:3px;
+  margin:28px auto 0;
+  border-radius:20px;
+  background:#292432;
+  overflow:hidden;
+}
+
+.intro-line span{
+  display:block;
+  width:0;
+  height:100%;
+  background:#a78bfa;
+  animation:introLoad 2.3s forwards;
+}
+
+@keyframes introLoad{
+  to{width:100%}
+}
+
+@keyframes introIn{
+  from{
+    opacity:0;
+    transform:translateY(25px) scale(.95);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+/* ================= HEADER ================= */
+
+header{
+  height:70px;
+  padding:0 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:#09090e;
+  border-bottom:1px solid #ffffff0c;
+  position:sticky;
+  top:0;
+  z-index:100;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:21px;
+  font-weight:800;
+}
+
+.brand-icon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#914cff,#6123d8);
+  font-size:20px;
+}
+
+.brand span{
+  color:#a78bfa;
+}
+
+.online{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 13px;
+  border-radius:30px;
+  background:#17121f;
+  border:1px solid #ffffff0d;
+  color:#aaa4b5;
+  font-size:12px;
+}
+
+.online-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#8b5cf6;
+  box-shadow:0 0 12px #8b5cf6;
+}
+
+/* ================= MAIN ================= */
+
+main{
+  width:min(700px,100%);
+  margin:auto;
+  padding:35px 18px 70px;
+}
+
+.hero{
+  text-align:center;
+}
+
+.robot{
+  width:105px;
+  height:105px;
+  margin:5px auto 18px;
+  border-radius:35px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(circle,#302047,#15111d);
+  border:1px solid #67459a;
+  box-shadow:0 0 40px #8b5cf633;
+  animation:float 3s infinite ease-in-out;
+}
+
+.robot-face{
+  position:relative;
+  width:68px;
+  height:56px;
+  border-radius:19px;
+  background:#d8d8e8;
+}
+
+.robot-face:before{
+  content:"";
+  position:absolute;
+  left:15px;
+  top:17px;
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#8b5cf6;
+  box-shadow:26px 0 #8b5cf6;
+}
+
+.robot-face:after{
+  content:"";
+  position:absolute;
+  left:22px;
+  bottom:12px;
+  width:25px;
+  height:5px;
+  border-radius:20px;
+  background:#77778c;
+}
+
+.antenna{
+  position:absolute;
+  width:4px;
+  height:18px;
+  left:32px;
+  top:-18px;
+  background:#8b5cf6;
+}
+
+.antenna:after{
+  content:"";
+  position:absolute;
+  width:10px;
+  height:10px;
+  left:-3px;
+  top:-5px;
+  border-radius:50%;
+  background:#a78bfa;
+  box-shadow:0 0 15px #a78bfa;
+}
+
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-7px)}
+}
+
+.robot-status{
+  color:#a78bfa;
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:1.5px;
+  margin-bottom:15px;
+}
+
+h1{
+  font-size:clamp(36px,9vw,55px);
+  line-height:1.03;
+  letter-spacing:-2px;
+}
+
+h1 span{
+  color:#a78bfa;
+}
+
+.hero-text{
+  color:#918d9d;
+  font-size:14px;
+  line-height:1.6;
+  max-width:520px;
+  margin:17px auto 30px;
+}
+
+/* ================= CARD ================= */
+
+.card{
+  padding:18px;
+  border-radius:24px;
+  background:linear-gradient(145deg,#15141c,#0f0e14);
+  border:1px solid #ffffff0d;
+  box-shadow:0 25px 70px #00000055;
+}
+
+/* ================= IMAGE TO IMAGE ================= */
+
+.mode-switch{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-bottom:18px;
+}
+
+.mode-btn{
+  padding:13px 8px;
+  border:1px solid #ffffff10;
+  border-radius:12px;
+  background:#0c0b11;
+  color:#aaa5b5;
+  font-size:12px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.mode-btn.active{
+  color:white;
+  background:#6d28d9;
+  border-color:#8b5cf6;
+}
+
+#imageUploadBox{
+  display:none;
+  margin-bottom:15px;
+}
+
+#sourceImage{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  background:#09090e;
+  color:#aaa;
+  border:1px solid #ffffff10;
+}
+
+#sourcePreview{
+  display:none;
+  width:100%;
+  max-height:280px;
+  margin-top:12px;
+  border-radius:15px;
+  object-fit:contain;
+  background:#050507;
+}
+
+label{
+  display:block;
+  color:#c9c5d3;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+textarea{
+  width:100%;
+  height:145px;
+  resize:none;
+  outline:none;
+  border:1px solid #ffffff0c;
+  border-radius:17px;
+  padding:16px;
+  background:#09090e;
+  color:white;
+  font-size:15px;
+  line-height:1.5;
+}
+
+textarea:focus{
+  border-color:#8b5cf6;
+}
+
+.generate{
+  width:100%;
+  margin-top:14px;
+  padding:17px;
+  border:0;
+  border-radius:16px;
+  color:white;
+  background:linear-gradient(135deg,#9650ff,#6d28d9);
+  font-size:16px;
+  font-weight:800;
+  box-shadow:0 10px 30px #8b5cf633;
+  cursor:pointer;
+}
+
+.generate:active{
+  transform:scale(.98);
+}
+
+.generate:disabled{
+  opacity:.6;
+}
+
+/* ================= LOADING ================= */
+
+#loading{
+  display:none;
+  text-align:center;
+  padding:25px 0 5px;
+}
+
+.spinner{
+  width:40px;
+  height:40px;
+  margin:auto;
+  border-radius:50%;
+  border:3px solid #292532;
+  border-top-color:#a78bfa;
+  animation:spin .8s linear infinite;
+}
+
+.loading-text{
+  color:#9792a3;
+  font-size:12px;
+  margin-top:12px;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+/* ================= RESULT ================= */
+
+#result{
+  display:none;
+  margin-top:18px;
+}
+
+.result-card{
+  overflow:hidden;
+  border-radius:21px;
+  background:#09090e;
+  border:1px solid #ffffff0e;
+}
+
+.image-preview{
+  position:relative;
+  width:100%;
+  aspect-ratio:1/1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+
+  background:
+    radial-gradient(
+      circle at 25% 25%,
+      #743ed955,
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 75% 70%,
+      #2563eb44,
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #181226,
+      #08080d
+    );
+}
+
+.image-preview:before{
+  content:"";
+  position:absolute;
+  width:250px;
+  height:250px;
+  border-radius:50%;
+  background:#8b5cf633;
+  filter:blur(65px);
+}
+
+.demo-image{
+  position:relative;
+  width:155px;
+  height:155px;
+  border-radius:38px;
+  background:linear-gradient(
+    135deg,
+    #b18cff,
+    #39259a
+  );
+  transform:rotate(-8deg);
+  box-shadow:0 25px 60px #00000066;
+}
+
+.demo-image:before{
+  content:"AI";
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  font-size:58px;
+  font-weight:900;
+  transform:rotate(8deg);
+}
+.result-info{
+  padding:17px;
+}
+
+.result-label{
+  color:#777381;
+  font-size:11px;
+  margin-bottom:8px;
+}
+
+.result-prompt{
+  color:#ddd9e4;
+  font-size:14px;
+  margin-bottom:16px;
+  word-break:break-word;
+}
+
+/* ================= FAILED ================= */
+
+.failed-box{
+  padding:16px;
+  border-radius:15px;
+  background:#14111b;
+  border:1px solid #ffffff0d;
+}
+
+.failed-title{
+  font-size:14px;
+  font-weight:bold;
+  margin-bottom:6px;
+}
+
+.failed-text{
+  color:#888493;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.retry{
+  width:100%;
+  margin-top:13px;
+  padding:14px;
+  border:0;
+  border-radius:13px;
+  background:linear-gradient(135deg,#8b5cf6,#6d28d9);
+  color:white;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+/* ================= PRANK ================= */
+
+#prankBackground{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:#050505;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+  cursor:pointer;
+}
+
+.prank-content{
+  width:100%;
+  max-width:650px;
+  text-align:center;
+}
+
+.prank-svg{
+  width:100%;
+  max-height:78vh;
+  object-fit:contain;
+}
+
+.tap-text{
+  position:fixed;
+  bottom:15px;
+  left:50%;
+  transform:translateX(-50%);
+  color:#ffffff20;
+  font-size:10px;
+}
+
+footer{
+  text-align:center;
+  color:#575362;
+  font-size:11px;
+  padding-bottom:30px;
+}
+
+@media(max-width:480px){
+
+  header{
+    padding:0 14px;
+  }
+
+  .brand{
+    font-size:18px;
+  }
+
+  .online{
+    font-size:10px;
+  }
+
+  main{
+    padding-top:25px;
+  }
+
+  .card{
+    padding:15px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- ================= INTRO ================= -->
+
+<div id="intro">
+
+  <div class="intro-content">
+
+    <div class="intro-logo">S</div>
+
+    <div class="intro-title">
+      holic's <span>AI</span>
+    </div>
+
+    <div class="created">
+      Created by <b>holic's</b>
+    </div>
+
+    <div class="intro-line">
+      <span></span>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+  <div class="brand">
+
+    <div class="brand-icon">S</div>
+
+    holic's <span>AI</span>
+
+  </div>
+
+  <div class="online">
+
+    <span class="online-dot"></span>
+
+    AI ONLINE
+
+  </div>
+
+</header>
+
+
+<!-- ================= MAIN ================= -->
+
+<main>
+
+<section class="hero">
+
+  <div class="robot">
+
+    <div class="robot-face">
+
+      <div class="antenna"></div>
+
+    </div>
+
+  </div>
+
+  <div class="robot-status">
+    ● AI ROBOT ONLINE
+  </div>
+
+  <h1>
+    Create <span>Anything</span><br>
+    With AI
+  </h1>
+
+  <p class="hero-text">
+    Describe your idea and create beautiful images
+    with the power of AI.
+  </p>
+
+</section>
+
+
+<!-- ================= GENERATOR ================= -->
+
+<section class="card">
+
+
+  <!-- NEW: TWO MODES -->
+
+  <div class="mode-switch">
+
+    <button
+      type="button"
+      class="mode-btn active"
+      id="textMode"
+      onclick="setMode('text')">
+
+      ✨ Text to Image
+
+    </button>
+
+
+    <button
+      type="button"
+      class="mode-btn"
+      id="imageMode"
+      onclick="setMode('image')">
+
+      🖼️ Image to Image
+
+    </button>
+
+  </div>
+
+
+  <!-- NEW: IMAGE UPLOAD -->
+
+  <div id="imageUploadBox">
+
+    <label>
+      Select Image
+    </label>
+
+
+    <input
+      type="file"
+      id="sourceImage"
+      accept="image/*"
+      onchange="previewSourceImage(event)"
+    >
+
+
+    <img
+      id="sourcePreview"
+      alt="Selected image"
+    >
+
+  </div>
+
+
+  <label>
+    Describe your image
+  </label>
+
+  <textarea
+    id="prompt"
+    placeholder="Make a 🚗..."
+  ></textarea>
+
+
+  <button
+    id="generateBtn"
+    class="generate"
+    onclick="generateImage()"
+  >
+    ✨ Generate Image
+  </button>
+
+
+  <!-- LOADING -->
+
+  <div id="loading">
+
+    <div class="spinner"></div>
+
+    <div class="loading-text">
+      AI Robot is generating your image...
+    </div>
+
+  </div>
+
+
+  <!-- RESULT -->
+
+  <div id="result">
+
+    <div class="result-card">
+
+      <div class="image-preview">
+
+        <div class="demo-image"></div>
+
+      </div>
+
+
+      <div class="result-info">
+
+        <div class="result-label">
+          GENERATED IMAGE
+        </div>
+
+        <div
+          id="resultPrompt"
+          class="result-prompt">
+        </div>
+
+
+        <!-- FAILED -->
+
+        <div class="failed-box">
+
+          <div class="failed-title">
+            ⚠️ Image generation failed
+          </div>
+
+          <div class="failed-text">
+            Something went wrong while processing
+            your image. Please try again.
+          </div>
+
+          <button
+            class="retry"
+            onclick="retryGeneration()"
+          >
+            ↻ Retry
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+<footer>
+  holic's AI · Created by Surojit
+</footer>
+
+
+<!-- ================= PRANK ================= -->
+
+<div id="prankBackground">
+
+  <div class="prank-content">
+
+    <svg
+      class="prank-svg"
+      viewBox="0 0 700 500"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+
+      <defs>
+
+        <radialGradient id="prankBg">
+
+          <stop
+            offset="0%"
+            stop-color="#24163f"
+          />
+
+          <stop
+            offset="100%"
+            stop-color="#000000"
+          />
+
+        </radialGradient>
+
+        <filter id="blurGlow">
+
+          <feGaussianBlur
+            stdDeviation="12"
+          />
+
+        </filter>
+
+      </defs>
+
+
+      <rect
+        width="700"
+        height="500"
+        fill="url(#prankBg)"
+      />
+
+
+      <circle
+        cx="350"
+        cy="250"
+        r="155"
+        fill="#8b5cf633"
+        filter="url(#blurGlow)"
+      />
+
+
+      <circle
+        cx="350"
+        cy="250"
+        r="120"
+        fill="#17131f"
+        stroke="#8b5cf6"
+        stroke-width="4"
+      />
+
+
+      <rect
+        x="265"
+        y="185"
+        width="170"
+        height="130"
+        rx="35"
+        fill="#d8d8e8"
+      />
+
+
+      <circle
+        cx="315"
+        cy="235"
+        r="19"
+        fill="#8b5cf6"
+      />
+
+      <circle
+        cx="385"
+        cy="235"
+        r="19"
+        fill="#8b5cf6"
+      />
+
+
+      <path
+        d="M315 275 Q350 305 385 275"
+        fill="none"
+        stroke="#77778c"
+        stroke-width="9"
+        stroke-linecap="round"
+      />
+
+
+      <line
+        x1="350"
+        y1="185"
+        x2="350"
+        y2="140"
+        stroke="#8b5cf6"
+        stroke-width="7"
+      />
+
+
+      <circle
+        cx="350"
+        cy="130"
+        r="13"
+        fill="#a78bfa"
+      />
+
+    </svg>
+
+  </div>
+
+  <div class="tap-text">
+    Tap screen
+  </div>
+
+</div>
+
+
+<script>
+/* =====================================
+   INTRO
+===================================== */
+
+window.addEventListener("load", function(){
+
+  setTimeout(function(){
+
+    document
+      .getElementById("intro")
+      .classList.add("hide");
+
+  },2600);
+
+});
+
+
+/* =====================================
+   IMAGE TO IMAGE MODE
+===================================== */
+
+let currentMode = "text";
+
+
+function setMode(mode){
+
+  currentMode = mode;
+
+
+  const textMode =
+    document.getElementById("textMode");
+
+
+  const imageMode =
+    document.getElementById("imageMode");
+
+
+  const uploadBox =
+    document.getElementById("imageUploadBox");
+
+
+  if(mode === "text"){
+
+    textMode.classList.add("active");
+
+    imageMode.classList.remove("active");
+
+    uploadBox.style.display = "none";
+
+  }
+
+  else{
+
+    imageMode.classList.add("active");
+
+    textMode.classList.remove("active");
+
+    uploadBox.style.display = "block";
+
+  }
+
+}
+
+
+/* =====================================
+   IMAGE PREVIEW
+===================================== */
+
+function previewSourceImage(event){
+
+  const file =
+    event.target.files[0];
+
+
+  if(!file){
+
+    return;
+
+  }
+
+
+  const preview =
+    document.getElementById("sourcePreview");
+
+
+  preview.src =
+    URL.createObjectURL(file);
+
+
+  preview.style.display =
+    "block";
+
+}
+
+
+/* =====================================
+   CUSTOM SOUND
+===================================== */
+
+const prankSound =
+  new Audio("prank-sound.mp3");
+
+prankSound.loop = true;
+
+prankSound.volume = 0.1;
+
+let currentVolume = 0.1;
+
+
+/* =====================================
+   GENERATE IMAGE
+===================================== */
+
+function generateImage(){
+
+  const prompt =
+    document
+      .getElementById("prompt")
+      .value
+      .trim();
+
+
+  /*
+     Text to Image:
+     Prompt অবশ্যই লাগবে।
+  */
+
+  if(currentMode === "text" && !prompt){
+
+    alert(
+      "Please describe your image first."
+    );
+
+    return;
+
+  }
+
+
+  /*
+     Image to Image:
+     Image অবশ্যই select করতে হবে।
+  */
+
+  if(currentMode === "image"){
+
+    const source =
+      document
+        .getElementById("sourceImage")
+        .files[0];
+
+
+    if(!source){
+
+      alert(
+        "Please select an image first."
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  const button =
+    document.getElementById(
+      "generateBtn"
+    );
+
+
+  const loading =
+    document.getElementById(
+      "loading"
+    );
+
+
+  const result =
+    document.getElementById(
+      "result"
+    );
+
+
+  button.disabled = true;
+
+  result.style.display = "none";
+
+  loading.style.display = "block";
+
+
+  /*
+     আগের মতো demo processing।
+  */
+
+  setTimeout(function(){
+
+    loading.style.display =
+      "none";
+
+
+    document
+      .getElementById("resultPrompt")
+      .textContent =
+      prompt ||
+      "Image transformation";
+
+
+    result.style.display =
+      "block";
+
+
+    button.disabled =
+      false;
+
+
+  },3000);
+
+}
+
+
+/* =====================================
+   RETRY → PRANK
+===================================== */
+
+function retryGeneration(){
+
+  const prank =
+    document.getElementById(
+      "prankBackground"
+    );
+
+
+  prank.style.display =
+    "flex";
+
+
+  startPrankSound();
+
+}
+
+
+/* =====================================
+   START PRANK SOUND
+===================================== */
+
+function startPrankSound(){
+
+  currentVolume = 0.1;
+
+
+  prankSound.volume =
+    currentVolume;
+
+
+  prankSound.currentTime =
+    0;
+
+
+  prankSound
+    .play()
+    .catch(function(error){
+
+      console.log(
+        "Audio could not start:",
+        error
+      );
+
+    });
+
+}
+
+
+/* =====================================
+   TAP → VOLUME INCREASE
+===================================== */
+
+document
+  .getElementById("prankBackground")
+  .addEventListener(
+    "click",
+    function(){
+
+      currentVolume += 0.1;
+
+
+      if(currentVolume > 1){
+
+        currentVolume = 1;
+
+      }
+
+
+      prankSound.volume =
+        currentVolume;
+
+    }
+  );
+
+
+/* =====================================
+   ESC KEY
+   FOR TESTING
+===================================== */
+
+document.addEventListener(
+  "keydown",
+  function(event){
+
+    if(event.key === "Escape"){
+
+      document
+        .getElementById(
+          "prankBackground"
+        )
+        .style.display =
+        "none";
+
+
+      prankSound.pause();
+
+      prankSound.currentTime =
+        0;
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
